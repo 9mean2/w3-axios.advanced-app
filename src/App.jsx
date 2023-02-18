@@ -10,14 +10,19 @@ function App() {
     title: "",
   });
 
-  // 9. 추가 버튼 POST 함수를 만들어줌
+  // 12. 수정할 부분에 넣을 state가 필요하니 생성
+  const [targetId, setTargetId] = useState("");
+  const [contents, setContents] = useState("");
+
+  // 9. 추가 버튼 핸들러를 POST 함수를 만들어줌
   const onSubmitHandler = async () => {
     axios.post("http://localhost:4000/todos", inputValue);
-    //state도 같이 렌더링 시켜주기 위해서 작성 map으로 뿌려준 todos
-    setTodos([...todos, inputValue]);
+    //state도 같이 렌더링 시켜주기 위해서 작성 map으로 려준 todos
+    // setTodos([...todos, inputValue]);
+    fetchTodos();
   };
 
-  //10. 삭제 버튼 함수를 만들어줌 DELETE
+  //10. 삭제 버튼 핸들러 함수를 만들어줌 DELETE
   const onDeleteBtnHandler = async (id) => {
     axios.delete(`http://localhost:4000/todos/${id}`);
     //state도 같이 렌더링 시켜주기 위해서 setTodos를 쓰고 filter로 삭제
@@ -28,12 +33,27 @@ function App() {
     );
   };
 
+  // 14. 수정 버튼 핸들러를 만들어줌 PATCH
+  const onUpdateButtonHandler = async () => {
+    axios.patch(`http://localhost:4000/todos/${targetId}`, {
+      title: contents,
+    });
+
+    setTodos(
+      todos.map((item) => {
+        if (item.id == targetId) {
+          return { ...item, title: contents };
+        } else {
+          return item;
+        }
+      })
+    );
+  };
+
   // 2. 비동기 함수를 만듬 , 서버 통신을 한다는 것 자체가 비동기를 의미하기 때문
   const fetchTodos = async () => {
     //get 으로 axios 통신을 요청 , axios 앞에 await을 붙여야함
     const { data } = await axios.get("http://localhost:4000/todos");
-
-    console.log("data: ", data);
 
     // 4. todos에 데이터를 set 해줌, 그래야 컴포넌트 안에서 state에 db가 돌아감
     setTodos(data);
@@ -47,6 +67,29 @@ function App() {
 
   return (
     <>
+      <div>
+        {/* 11. 수정영역 */}
+        {/* 13. 생성한 스테이트를 엮어준다 온체인지와  */}
+        <input
+          type="text"
+          placeholder="수정할 아이디"
+          value={targetId}
+          onChange={(event) => {
+            setTargetId(event.target.value);
+          }}
+        />
+        <input
+          type="text"
+          placeholder="수정할 내용"
+          value={contents}
+          onChange={(event) => {
+            setContents(event.target.value);
+          }}
+        />
+        <button onClick={onUpdateButtonHandler}>수정</button>
+        <br />
+        <br />
+      </div>
       <div>
         {/* {input 영역} */}
         <form
@@ -62,7 +105,7 @@ function App() {
           {/* 6. 추가를 누를 때 인풋값에 있는 값을 알아야함 벨류와 온체인지를 항상 엮어줘야함*/}
           <input
             type="text"
-            /*8. 스테이트를 value와 onChange를 엮어준다*/
+            //8. 스테이트를 value와 onChange를 엮어준다
             value={inputValue.title}
             onChange={(event) => {
               setInputValue({ title: event.target.value });
