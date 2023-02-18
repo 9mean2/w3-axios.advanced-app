@@ -10,11 +10,22 @@ function App() {
     title: "",
   });
 
-  // 9. POST 함수를 만들어줌
+  // 9. 추가 버튼 POST 함수를 만들어줌
   const onSubmitHandler = async () => {
     axios.post("http://localhost:4000/todos", inputValue);
     //state도 같이 렌더링 시켜주기 위해서 작성 map으로 뿌려준 todos
     setTodos([...todos, inputValue]);
+  };
+
+  //10. 삭제 버튼 함수를 만들어줌 DELETE
+  const onDeleteBtnHandler = async (id) => {
+    axios.delete(`http://localhost:4000/todos/${id}`);
+    //state도 같이 렌더링 시켜주기 위해서 setTodos를 쓰고 filter로 삭제
+    setTodos(
+      todos.filter((item) => {
+        return item.id !== id;
+      })
+    );
   };
 
   // 2. 비동기 함수를 만듬 , 서버 통신을 한다는 것 자체가 비동기를 의미하기 때문
@@ -72,7 +83,9 @@ function App() {
             <div key={item.id}>
               {item.id} : {item.title}
               {/* 삭제버튼 */}
-              &nbsp;<button>삭제</button>
+              {/* 함수 호출시 몇번째 아이디를 삭제해야하는지 id를 알려줘야함 */}
+              &nbsp;
+              <button onClick={() => onDeleteBtnHandler(item.id)}>삭제</button>
             </div>
           );
         })}
