@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import api from "./axios/api";
 
 function App() {
   // 3.받아온 데이터를  컴포넌트 안에서 데이터로서 state로 쓰기 위해 state를 생성
@@ -16,7 +17,9 @@ function App() {
 
   // 9. 추가 버튼 핸들러를 POST 함수를 만들어줌
   const onSubmitHandler = async () => {
-    axios.post("http://localhost:4000/todos", inputValue);
+    // axios.post("http://localhost:4000/todos", inputValue);
+    api.post(`/todos`, inputValue);
+
     //state도 같이 렌더링 시켜주기 위해서 작성 map으로 려준 todos
     // setTodos([...todos, inputValue]);
     fetchTodos();
@@ -24,7 +27,9 @@ function App() {
 
   //10. 삭제 버튼 핸들러 함수를 만들어줌 DELETE
   const onDeleteBtnHandler = async (id) => {
-    axios.delete(`http://localhost:4000/todos/${id}`);
+    // axios.delete(`http://localhost:4000/todos/${id}`);
+    api.delete(`/todos/${id}`);
+
     //state도 같이 렌더링 시켜주기 위해서 setTodos를 쓰고 filter로 삭제
     setTodos(
       todos.filter((item) => {
@@ -35,7 +40,11 @@ function App() {
 
   // 14. 수정 버튼 핸들러를 만들어줌 PATCH
   const onUpdateButtonHandler = async () => {
-    axios.patch(`http://localhost:4000/todos/${targetId}`, {
+    // axios.patch(`http://localhost:4000/todos/${targetId}`, {
+    //   title: contents,
+    // });
+
+    api.patch(`/todos/${targetId}`, {
       title: contents,
     });
 
@@ -53,7 +62,9 @@ function App() {
   // 2. 비동기 함수를 만듬 , 서버 통신을 한다는 것 자체가 비동기를 의미하기 때문
   const fetchTodos = async () => {
     //get 으로 axios 통신을 요청 , axios 앞에 await을 붙여야함
-    const { data } = await axios.get("http://localhost:4000/todos");
+    // const { data } = await axios.get("http://localhost:4000/todos");
+    // instance api를 이용해서 요청
+    const { data } = await api.get("todos");
 
     // 4. todos에 데이터를 set 해줌, 그래야 컴포넌트 안에서 state에 db가 돌아감
     setTodos(data);
